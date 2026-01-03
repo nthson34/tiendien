@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tính tiền điện EVN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+    --primary: #2563eb;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --danger: #dc2626;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.header span {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 14px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+button {
+    margin-top: 14px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+}
+
+/* 👉 FIX QUAN TRỌNG */
+#result {
+    margin-top: 20px;
+    min-height: 50px;      /* ép browser render */
+    transition: all .25s;
+}
+
+.section h3 {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.summary {
+    margin-top: 14px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.total {
+    margin-top: 14px;
+    padding: 14px;
+    background: #eef2ff;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.total strong {
+    font-size: 22px;
+    color: var(--danger);
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+<div class="card">
+
+    <div class="header">
+        <h1>⚡ TÍNH TIỀN ĐIỆN EVN</h1>
+        <span>Bậc thang + VAT 8%</span>
+    </div>
+
+    <label>Số điện tiêu thụ (kWh)</label>
+    <input id="kw" type="number" placeholder="Ví dụ: 220">
+
+    <button id="btn">Tính tiền</button>
+
+    <!-- VÙNG KẾT QUẢ -->
+    <div id="result"></div>
+
+</div>
+</div>
+
+<script>
+document.getElementById("btn").addEventListener("click", tinhTien);
+
+function tinhTien() {
+    const tongKw = Number(document.getElementById("kw").value);
+    if (!tongKw || tongKw <= 0) {
+        alert("Vui lòng nhập số điện hợp lệ");
+        return;
+    }
+
+    const bac = [
+        { max: 50, gia: 1984 },
+        { max: 50, gia: 2050 },
+        { max: 100, gia: 2380 },
+        { max: 100, gia: 2998 },
+        { max: 100, gia: 3350 },
+        { max: Infinity, gia: 3460 }
+    ];
+
+    let conLai = tongKw;
+    let tongTien = 0;
+    let html = `<div class="section"><h3>CHI TIẾT TÍNH TIỀN</h3>`;
+
+    for (let i = 0; i < bac.length && conLai > 0; i++) {
+        let kwThucTe = bac[i].max === Infinity ? conLai : bac[i].max / 2;
+        let dung = Math.min(conLai, kwThucTe);
+        let tien = dung * bac[i].gia;
+
+        tongTien += tien;
+        conLai -= dung;
+
+        html += `
+        <div class="row">
+            <span>Bậc ${i + 1} (${dung} kWh)</span>
+            <strong>${tien.toLocaleString()} đ</strong>
+        </div>`;
+    }
+
+    const vat = tongTien * 0.08;
+    const tong = tongTien + vat;
+
+    html += `
+    </div>
+    <div class="summary">
+        <div class="row"><span>Tiền điện</span><strong>${tongTien.toLocaleString()} đ</strong></div>
+        <div class="row"><span>VAT 8%</span><strong>${vat.toLocaleString()} đ</strong></div>
+    </div>
+    <div class="total">
+        <span>TỔNG THANH TOÁN</span>
+        <strong>${tong.toLocaleString()} đ</strong>
+    </div>`;
+
+    const result = document.getElementById("result");
+    result.innerHTML = html;
+    result.scrollIntoView({ behavior: "smooth" }); // UX tốt hơn
+}
+</script>
+</body>
+</html>
