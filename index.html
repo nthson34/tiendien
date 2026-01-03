@@ -6,148 +6,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
-    --primary: #2563eb;
-    --bg: #f4f6fb;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --danger: #dc2626;
-}
-
-* { box-sizing: border-box; }
-
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-    background: var(--bg);
-    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    background: #eef3f8;
+    color: #1f2937;
 }
 
-.wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.card {
-    width: 100%;
-    max-width: 480px;
-    background: var(--card);
-    border-radius: 18px;
-    padding: 22px;
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-}
-
+/* Header EVN style */
 .header {
+    background: #005bac;
+    color: white;
+    padding: 16px;
     text-align: center;
-    margin-bottom: 20px;
 }
 
 .header h1 {
     margin: 0;
-    font-size: 22px;
+    font-size: 20px;
 }
 
-.header span {
+.header p {
+    margin: 4px 0 0;
     font-size: 13px;
-    color: var(--muted);
+    opacity: 0.9;
+}
+
+/* Main container */
+.container {
+    max-width: 520px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    padding: 16px;
+}
+
+.form-group {
+    margin-bottom: 14px;
 }
 
 label {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: bold;
 }
 
 input {
     width: 100%;
     margin-top: 6px;
-    padding: 12px 14px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
 }
 
 button {
-    margin-top: 14px;
     width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 12px;
+    padding: 11px;
+    font-size: 15px;
+    background: #005bac;
+    color: white;
     border: none;
-    background: var(--primary);
-    color: #fff;
+    border-radius: 4px;
     cursor: pointer;
 }
 
-/* 👉 FIX QUAN TRỌNG */
-#result {
-    margin-top: 20px;
-    min-height: 50px;      /* ép browser render */
-    transition: all .25s;
+button:hover {
+    background: #004a8f;
 }
 
-.section h3 {
-    font-size: 14px;
-    color: var(--muted);
+/* Result */
+#result {
+    margin-top: 18px;
+}
+
+/* Table EVN style */
+.table-title {
+    font-weight: bold;
     margin-bottom: 8px;
 }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
+table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 14px;
-    border-bottom: 1px dashed #e5e7eb;
 }
 
-.summary {
-    margin-top: 14px;
-    padding: 12px;
-    background: #f8fafc;
-    border-radius: 12px;
+table th, table td {
+    border: 1px solid #cbd5e1;
+    padding: 8px;
+    text-align: right;
 }
 
-.total {
-    margin-top: 14px;
-    padding: 14px;
-    background: #eef2ff;
-    border-radius: 14px;
+table th {
+    background: #f1f5f9;
     text-align: center;
 }
 
-.total strong {
-    font-size: 22px;
-    color: var(--danger);
+table td:first-child {
+    text-align: center;
+}
+
+.summary {
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.summary div {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+}
+
+.total {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f1f5f9;
+    border-left: 4px solid #005bac;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
 }
 </style>
 </head>
 
 <body>
-<div class="wrapper">
-<div class="card">
 
-    <div class="header">
-        <h1>⚡ TÍNH TIỀN ĐIỆN EVN</h1>
-        <span>Bậc thang + VAT 8%</span>
+<div class="header">
+    <h1>⚡ TÍNH TIỀN ĐIỆN SINH HOẠT</h1>
+    <p>Theo biểu giá EVN – Đã bao gồm VAT</p>
+</div>
+
+<div class="container">
+    <div class="form-group">
+        <label>Số điện tiêu thụ (kWh)</label>
+        <input type="number" id="kw" placeholder="Ví dụ: 220">
     </div>
 
-    <label>Số điện tiêu thụ (kWh)</label>
-    <input id="kw" type="number" placeholder="Ví dụ: 220">
+    <button onclick="tinhTien()">Tính tiền</button>
 
-    <button id="btn">Tính tiền</button>
-
-    <!-- VÙNG KẾT QUẢ -->
     <div id="result"></div>
-
-</div>
 </div>
 
 <script>
-document.getElementById("btn").addEventListener("click", tinhTien);
-
 function tinhTien() {
     const tongKw = Number(document.getElementById("kw").value);
     if (!tongKw || tongKw <= 0) {
@@ -166,41 +168,57 @@ function tinhTien() {
 
     let conLai = tongKw;
     let tongTien = 0;
-    let html = `<div class="section"><h3>CHI TIẾT TÍNH TIỀN</h3>`;
+
+    let rows = "";
 
     for (let i = 0; i < bac.length && conLai > 0; i++) {
         let kwThucTe = bac[i].max === Infinity ? conLai : bac[i].max / 2;
         let dung = Math.min(conLai, kwThucTe);
         let tien = dung * bac[i].gia;
 
-        tongTien += tien;
         conLai -= dung;
+        tongTien += tien;
 
-        html += `
-        <div class="row">
-            <span>Bậc ${i + 1} (${dung} kWh)</span>
-            <strong>${tien.toLocaleString()} đ</strong>
-        </div>`;
+        rows += `
+        <tr>
+            <td>${i + 1}</td>
+            <td>${dung}</td>
+            <td>${bac[i].gia.toLocaleString()}</td>
+            <td>${tien.toLocaleString()}</td>
+        </tr>`;
     }
 
     const vat = tongTien * 0.08;
     const tong = tongTien + vat;
 
-    html += `
-    </div>
-    <div class="summary">
-        <div class="row"><span>Tiền điện</span><strong>${tongTien.toLocaleString()} đ</strong></div>
-        <div class="row"><span>VAT 8%</span><strong>${vat.toLocaleString()} đ</strong></div>
-    </div>
-    <div class="total">
-        <span>TỔNG THANH TOÁN</span>
-        <strong>${tong.toLocaleString()} đ</strong>
-    </div>`;
+    document.getElementById("result").innerHTML = `
+        <div class="table-title">BẢNG KÊ CHI TIẾT TIỀN ĐIỆN</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bậc</th>
+                    <th>kWh</th>
+                    <th>Đơn giá (đ)</th>
+                    <th>Thành tiền (đ)</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+            </tbody>
+        </table>
 
-    const result = document.getElementById("result");
-    result.innerHTML = html;
-    result.scrollIntoView({ behavior: "smooth" }); // UX tốt hơn
+        <div class="summary">
+            <div><span>Tiền điện (chưa VAT)</span><span>${tongTien.toLocaleString()} đ</span></div>
+            <div><span>VAT 8%</span><span>${vat.toLocaleString()} đ</span></div>
+        </div>
+
+        <div class="total">
+            <span>TỔNG THANH TOÁN</span>
+            <span>${tong.toLocaleString()} đ</span>
+        </div>
+    `;
 }
 </script>
+
 </body>
 </html>
